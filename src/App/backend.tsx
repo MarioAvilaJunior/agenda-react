@@ -18,8 +18,13 @@ export const getCalendarsEndpoint = (): Promise<ICalendar[]> => {
   });
 };
 
-export const getEventsEndpoint = (): Promise<IEvent[]> => {
-  return fetch("http://localhost:8080/events").then((resp) => {
+export const getEventsEndpoint = (
+  startDate: string,
+  endDate: string
+): Promise<IEvent[]> => {
+  return fetch(
+    `http://localhost:8080/events?date_gte=${startDate}&date_lte=${endDate}&_sort=date,time`
+  ).then((resp) => {
     return resp.json();
   });
 };
