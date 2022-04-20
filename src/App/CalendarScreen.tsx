@@ -17,6 +17,9 @@ import Icon from "@material-ui/core/Icon";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { getCalendarsEndpoint, getEventsEndpoint, ICalendar } from "./backend";
 import { IEvent } from "./backend";
+import { formatMonth, addMonths } from "./dateFunctions";
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const WEEK_DAYS: string[] = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
@@ -104,17 +107,16 @@ const generateCalendar = (
   return weeks;
 };
 
-const getToday = (): string => {
-  return "2021-06-04" || new Date().toISOString().slice(0, 10);
-};
-
 const CalendarScreen = (): JSX.Element => {
+  const { yearAndMonth } = useParams<{ yearAndMonth: string }>();
+  //const yearAndMonth = "2021-06-01";
+
   const classes = useStyles();
   const [calendars, setCalendars] = useState<ICalendar[]>([]);
   const [selectedCalendars, setSelectedCalendars] = useState<boolean[]>([]);
   const [events, setEvents] = useState<IEvent[]>([]);
   const weeks = generateCalendar(
-    getToday(),
+    yearAndMonth + "-01",
     selectedCalendars,
     calendars,
     events
@@ -172,15 +174,23 @@ const CalendarScreen = (): JSX.Element => {
       <Box flex="1" display="flex" flexDirection="column">
         <Box display="flex" alignItems="center" padding="8px 16px">
           <Box>
-            <IconButton aria-label="Mês anterior">
+            <IconButton
+              aria-label="Mês anterior"
+              component={Link}
+              to={"/calendar/" + addMonths(yearAndMonth, -1)}
+            >
               <Icon>chevron_left</Icon>
             </IconButton>
-            <IconButton aria-label="Próximo mês">
+            <IconButton
+              aria-label="Próximo mês"
+              component={Link}
+              to={"/calendar/" + addMonths(yearAndMonth, 1)}
+            >
               <Icon>chevron_right</Icon>
             </IconButton>
           </Box>
           <Box flex="1" marginLeft="16px" component="h3">
-            Abril de 2022
+            {formatMonth(yearAndMonth)}
           </Box>
           <IconButton aria-label="Usuário">
             <Avatar>
