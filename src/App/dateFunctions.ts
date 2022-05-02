@@ -14,7 +14,7 @@ const MONTHS = [
 ];
 
 export const getToday = (): string => {
-  return "2021-06-01" || new Date().toISOString().slice(0, 10);
+  return new Date().toISOString().slice(0, 10);
 };
 
 export const formatMonth = (isoMonth: string) => {

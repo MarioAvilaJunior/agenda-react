@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import { getCalendarsEndpoint, getEventsEndpoint, ICalendar } from "./backend";
@@ -9,6 +8,8 @@ import CalendarsView from "./CalendarsView";
 import CalendarHeader from "./CalendarHeader";
 import Calendar from "./Calendar";
 import { ICalendarCell, IEventWithCalendar } from "./Calendar";
+import EventFormDialog, { IEventBeingEdited } from "./EventFormDialog";
+import { getToday } from "./dateFunctions";
 
 const generateCalendar = (
   date: string,
@@ -66,6 +67,8 @@ const CalendarScreen = (): JSX.Element => {
   const [calendars, setCalendars] = useState<ICalendar[]>([]);
   const [selectedCalendars, setSelectedCalendars] = useState<boolean[]>([]);
   const [events, setEvents] = useState<IEvent[]>([]);
+  const [eventBeingEdited, setEventBeingEdited] =
+    useState<IEventBeingEdited | null>(null);
   const weeks = generateCalendar(
     yearAndMonth + "-01",
     selectedCalendars,
@@ -92,6 +95,14 @@ const CalendarScreen = (): JSX.Element => {
     });
   }, [startDate, endDate]);
 
+  const openNewEvent = () => {
+    setEventBeingEdited({
+      date: getToday(),
+      desc: "",
+      calendarId: calendars[0].id,
+    });
+  };
+
   return (
     <Box display="flex" height="100%" alignItems="stretch">
       <Box
@@ -100,7 +111,7 @@ const CalendarScreen = (): JSX.Element => {
         padding="8px 16px"
       >
         <h2>Agenda React</h2>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={openNewEvent}>
           Novo evento
         </Button>
         <CalendarsView
@@ -112,6 +123,11 @@ const CalendarScreen = (): JSX.Element => {
       <Box flex="1" display="flex" flexDirection="column">
         <CalendarHeader yearAndMonth={yearAndMonth} />
         <Calendar weeks={weeks} />
+        <EventFormDialog
+          event={eventBeingEdited}
+          onClose={() => setEventBeingEdited(null)}
+          calendars={calendars}
+        />
       </Box>
     </Box>
   );
