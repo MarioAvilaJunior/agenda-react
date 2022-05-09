@@ -49,11 +49,19 @@ const useStyles = makeStyles({
 
 interface ICalendarProps {
   weeks: ICalendarCell[][];
+  onClickDay: (date: string) => void;
+  onClickEvent: (event: IEvent) => void;
 }
 
 const Calendar = (props: ICalendarProps) => {
   const classes = useStyles();
   const { weeks } = props;
+
+  const clickHandler = (evt: React.MouseEvent, date: string) => {
+    if (evt.target === evt.currentTarget) {
+      props.onClickDay(date);
+    }
+  };
 
   return (
     <TableContainer style={{ flex: "1" }} component="div">
@@ -73,12 +81,20 @@ const Calendar = (props: ICalendarProps) => {
           {weeks.map((week, index) => (
             <TableRow key={index}>
               {week.map((cell) => (
-                <TableCell align="center" key={cell.date}>
+                <TableCell
+                  align="center"
+                  key={cell.date}
+                  onClick={(mouseEvent) => clickHandler(mouseEvent, cell.date)}
+                >
                   <div className={classes.dayOfMonth}>{cell.dayOfMonth}</div>
                   {cell.events.map((event) => {
                     const color = event.calendar.color;
                     return (
-                      <button className={classes.event} key={event.id}>
+                      <button
+                        className={classes.event}
+                        key={event.id}
+                        onClick={() => props.onClickEvent(event)}
+                      >
                         {event.time && (
                           <>
                             <Icon style={{ color }} fontSize="inherit">

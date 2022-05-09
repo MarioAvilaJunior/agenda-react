@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import { getCalendarsEndpoint, getEventsEndpoint, ICalendar } from "./backend";
-import { IEvent } from "./backend";
+import { IEvent, IEventBeingEdited } from "./backend";
 import { useParams } from "react-router-dom";
 import CalendarsView from "./CalendarsView";
 import CalendarHeader from "./CalendarHeader";
 import Calendar from "./Calendar";
 import { ICalendarCell, IEventWithCalendar } from "./Calendar";
-import EventFormDialog, { IEventBeingEdited } from "./EventFormDialog";
+import EventFormDialog from "./EventFormDialog";
 import { getToday } from "./dateFunctions";
 
 const generateCalendar = (
@@ -78,6 +78,10 @@ const CalendarScreen = (): JSX.Element => {
   const startDate = weeks[0][0].date;
   const endDate = weeks[weeks.length - 1][6].date;
 
+  const refreshEvents = () => {
+    getEventsEndpoint(startDate, endDate).then(setEvents);
+  };
+
   const toogleCalendar = (index: number) => {
     const selectedCalendarsCopy = [...selectedCalendars];
     selectedCalendarsCopy[index] = !selectedCalendarsCopy[index];
@@ -95,9 +99,9 @@ const CalendarScreen = (): JSX.Element => {
     });
   }, [startDate, endDate]);
 
-  const openNewEvent = () => {
+  const openNewEvent = (date: string) => {
     setEventBeingEdited({
-      date: getToday(),
+      date: date,
       desc: "",
       calendarId: calendars[0].id,
     });
@@ -111,7 +115,11 @@ const CalendarScreen = (): JSX.Element => {
         padding="8px 16px"
       >
         <h2>Agenda React</h2>
-        <Button variant="contained" color="primary" onClick={openNewEvent}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => openNewEvent(getToday())}
+        >
           Novo evento
         </Button>
         <CalendarsView
@@ -122,10 +130,18 @@ const CalendarScreen = (): JSX.Element => {
       </Box>
       <Box flex="1" display="flex" flexDirection="column">
         <CalendarHeader yearAndMonth={yearAndMonth} />
-        <Calendar weeks={weeks} />
+        <Calendar
+          weeks={weeks}
+          onClickDay={openNewEvent}
+          onClickEvent={setEventBeingEdited}
+        />
         <EventFormDialog
           event={eventBeingEdited}
-          onClose={() => setEventBeingEdited(null)}
+          onSave={() => {
+            setEventBeingEdited(null);
+            refreshEvents();
+          }}
+          onCancel={() => setEventBeingEdited(null)}
           calendars={calendars}
         />
       </Box>
