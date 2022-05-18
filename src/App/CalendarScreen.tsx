@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import { getCalendarsEndpoint, getEventsEndpoint, ICalendar } from "./backend";
-import { IEvent, IEventBeingEdited } from "./backend";
+import { IEvent, IEventBeingEdited, IUser } from "./backend";
 import { useParams } from "react-router-dom";
 import CalendarsView from "./CalendarsView";
 import CalendarHeader from "./CalendarHeader";
@@ -60,7 +60,12 @@ const generateCalendar = (
   return weeks;
 };
 
-const CalendarScreen = (): JSX.Element => {
+interface ICalendarScreenProps {
+  onSignOut: () => void;
+  user: IUser;
+}
+
+const CalendarScreen = (props: ICalendarScreenProps): JSX.Element => {
   const { yearAndMonth } = useParams() as { yearAndMonth: string };
   //const yearAndMonth = "2021-06-01";
 
@@ -129,7 +134,11 @@ const CalendarScreen = (): JSX.Element => {
         />
       </Box>
       <Box flex="1" display="flex" flexDirection="column">
-        <CalendarHeader yearAndMonth={yearAndMonth} />
+        <CalendarHeader
+          onSignOut={props.onSignOut}
+          user={props.user}
+          yearAndMonth={yearAndMonth}
+        />
         <Calendar
           weeks={weeks}
           onClickDay={openNewEvent}
