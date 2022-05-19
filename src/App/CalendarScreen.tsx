@@ -60,12 +60,7 @@ const generateCalendar = (
   return weeks;
 };
 
-interface ICalendarScreenProps {
-  onSignOut: () => void;
-  user: IUser;
-}
-
-const CalendarScreen = (props: ICalendarScreenProps): JSX.Element => {
+const CalendarScreen = (): JSX.Element => {
   const { yearAndMonth } = useParams() as { yearAndMonth: string };
   //const yearAndMonth = "2021-06-01";
 
@@ -134,11 +129,7 @@ const CalendarScreen = (props: ICalendarScreenProps): JSX.Element => {
         />
       </Box>
       <Box flex="1" display="flex" flexDirection="column">
-        <CalendarHeader
-          onSignOut={props.onSignOut}
-          user={props.user}
-          yearAndMonth={yearAndMonth}
-        />
+        <CalendarHeader yearAndMonth={yearAndMonth} />
         <Calendar
           weeks={weeks}
           onClickDay={openNewEvent}
